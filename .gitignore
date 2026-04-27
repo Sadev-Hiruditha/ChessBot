@@ -236,3 +236,5 @@ frontend/.env
 frontend/.env.local
 
 http://googleusercontent.com/immersive_entry_chip/0
+
+backend/stockfish_engine/
