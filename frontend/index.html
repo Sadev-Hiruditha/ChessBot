@@ -1,23 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Chess Coach</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chess AI Coach</title>
+
+    <!-- Modern chessboard-element -->
+    <script type="module" src="https://unpkg.com/chessboard-element/bundled/chessboard-element.bundled.js"></script>
+
+    <!-- Chess.js (UMD version for rules) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>Chess AI Coach</h1>
+    <h1>Chess AI Coach</h1>
 
-<div id="board" style="width: 400px"></div>
+    <!-- Modern chessboard -->
+    <chess-board id="board" style="width: 400px; margin-bottom: 20px;"></chess-board>
 
-<textarea id="message" placeholder="Ask your coach..."></textarea>
-<button onclick="analyze()">Analyze Position</button>
+    <textarea id="message" placeholder="Ask your coach..."></textarea>
+    <button onclick="analyze()">Analyze Position</button>
 
-<pre id="response"></pre>
+    <!-- Changed from <pre> to <div> for proper HTML injection -->
+    <div id="response"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chessboard-js/1.0.0/chessboard-1.0.0.min.js"></script>
-<script src="script.js"></script>
-
+    <script src="script.js"></script>
 </body>
 </html>

@@ -22,12 +22,16 @@ class ChatPayload(BaseModel):
 @app.post("/api/coach")
 async def coach_endpoint(payload: ChatPayload):
 
-    # Only analyze with Stockfish if FEN is provided
+    # If user didn't type a message, auto-fill one
+    message = payload.message.strip()
+    if not message:
+        message = "Analyze this position."
+
     engine_data = None
     if payload.fen:
         engine_data = engine.analyze_position(payload.fen)
 
-    ai_reply = get_ai_response(payload.message, payload.fen, engine_data)
+    ai_reply = get_ai_response(message, payload.fen, engine_data)
 
     return {
         "reply": ai_reply,
