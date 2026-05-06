@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+stockfish
+google-genai
+python-dotenv
+chess
+pydantic
