@@ -4,6 +4,7 @@ import google.genai as genai
 import chess
 import chess.pgn
 from io import StringIO
+import re
 
 # Load environment variables
 load_dotenv()
@@ -24,7 +25,9 @@ When provided with a Stockfish evaluation, explain the tactical reasoning behind
 """
 
 def is_pgn(text):
-    return any(token.endswith('.') for token in text.split())
+    has_numbered_move = bool(re.search(r'\b\d+\.', text))
+    has_event_tag = "[Event " in text
+    return has_numbered_move or has_event_tag
 
 def pgn_to_fen(pgn_text):
     game = chess.pgn.read_game(StringIO(pgn_text))
@@ -62,11 +65,15 @@ User message: {user_message}
 
 Respond ONLY about chess.
 """
-        response = client.models.generate_content(
-            model="gemini-3-flash-preview",
-            contents=[prompt]
-        )
-        return response.text
+        try:
+           response = client.models.generate_content( 
+               model="gemini-3-flash-preview",
+               contents=[prompt]
+        
+            )
+           return response.text
+        except Exception as e:
+            return f"**Server Busy:** The AI coach is currently overloaded. Please try again in a minute! (Error: {e})"
 
     # 6. If FEN exists → Stockfish + Gemini
     prompt = f"""
@@ -78,8 +85,12 @@ Stockfish Evaluation: {engine_data}
 
 Explain this position like a human chess coach.
 """
-    response = client.models.generate_content(
-        model="gemini-3-flash-preview",
-        contents=[prompt]
-    )
-    return response.text
+    try:
+        response = client.models.generate_content(
+            model="gemini-3-flash-preview",
+            contents=[prompt]
+        )
+        return response.text
+    except Exception as e:
+        return f"**Server Busy:** The AI coach is currently overloaded. Please try again in a minute! (Error: {e})"
+  

@@ -1,25 +1,73 @@
 const board = document.getElementById("board");
 const game = new Chess();
 
-// Handle moves from the board
-board.addEventListener("move", (e) => {
-    const move = game.move({
-        from: e.detail.from,
-        to: e.detail.to,
-        promotion: "q" // Always promote to a queen for simplicity
-    });
+// Start the invisible referee
+game.load('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1');
 
-    if (!move) {
-        board.fen = game.fen(); // illegal → snap back
+// A "flag" to tell our code when to step in
+let needsSpecialSync = false;
+
+// 1. Block illegal grabs
+board.addEventListener('drag-start', (e) => {
+    const piece = e.detail.piece; 
+    if ((game.turn() === 'w' && piece.startsWith('b')) || 
+        (game.turn() === 'b' && piece.startsWith('w'))) {
+        e.preventDefault(); 
     }
 });
 
-// Analyze button
+// 2. Handle the drop
+board.addEventListener('drop', (e) => {
+    const { source, target, setAction } = e.detail;
+
+    // Ask the referee if the move is legal
+    const move = game.move({
+        from: source,
+        to: target,
+        promotion: 'q' 
+    });
+
+    if (!move) {
+        setAction('snapback');
+    } else {
+        document.getElementById("response").innerHTML = "";
+        
+        console.log(`Move played. Flags: ${move.flags}`);
+
+        // THE SNIPER FIX: 
+        // Only trigger a board sync if it's Castling ('k', 'q'), En Passant ('e'), or Promotion ('p')
+        if (move.flags.includes('k') || move.flags.includes('q') || 
+            move.flags.includes('e') || move.flags.includes('p')) {
+            needsSpecialSync = true;
+            console.log("Special move detected! Board sync prepared.");
+        }
+    }
+});
+
+// 3. Sync the board ONLY if a special move happened
+board.addEventListener('snap-end', () => {
+    if (needsSpecialSync) {
+        const currentFen = game.fen();
+        console.log("Executing special board sync: ", currentFen);
+        
+        // Use setAttribute (the safest way to update web components)
+        board.setAttribute('position', currentFen);
+        
+        // Reset the flag for the next move
+        needsSpecialSync = false; 
+    }
+});
+
+// 4. Analyze button logic
 async function analyze() {
     const message = document.getElementById("message").value.trim();
     const responseBox = document.getElementById("response");
 
     responseBox.innerHTML = "Thinking...";
+
+    if (game.load(message)) {
+        board.setAttribute('position', game.fen()); 
+    }
 
     const fen = game.fen();
     const payload = { message, fen };
@@ -33,18 +81,14 @@ async function analyze() {
 
         const data = await res.json();
 
-        // Enhanced basic markdown parser
-        let html = data.reply
-            .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>") // Bold
-            .replace(/### (.*?)(\n|$)/g, "<h3>$1</h3>") // H3 Headers
-            .replace(/(?:^|\n)[*-]\s+(.*)/g, "<ul><li>$1</li></ul>") // Bullet points
-            .replace(/<\/ul>\n<ul>/g, "") // Merge adjacent lists
-            .replace(/\n\n/g, "<br><br>") // Double line breaks
-            .replace(/\n/g, "<br>"); // Single line breaks
+        if (!res.ok || !data.reply) {
+            throw new Error(data.detail || "The server failed to generate a response.");
+        }
 
+        let html = marked.parse(data.reply);
         responseBox.innerHTML = html;
 
     } catch (error) {
-        responseBox.textContent = "Connection error: " + error.message;
+        responseBox.textContent = "Error: " + error.message;
     }
 }

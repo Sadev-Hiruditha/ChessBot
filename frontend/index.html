@@ -3,28 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chess AI Coach</title>
+    <title>PEDONE Chess AI</title>
 
-    <!-- Modern chessboard-element -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+
     <script type="module" src="https://unpkg.com/chessboard-element/bundled/chessboard-element.bundled.js"></script>
 
-    <!-- Chess.js (UMD version for rules) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>Chess AI Coach</h1>
+    <header>
+        <h1>PEDONE <span>AI Coach</span></h1>
+    </header>
 
-    <!-- Modern chessboard -->
-    <chess-board id="board" style="width: 400px; margin-bottom: 20px;"></chess-board>
+    <div class="container">
+        
+        <div class="left-panel">
+            <chess-board id="board" draggable-pieces position="start"></chess-board>
+        </div>
 
-    <textarea id="message" placeholder="Ask your coach..."></textarea>
-    <button onclick="analyze()">Analyze Position</button>
+        <div class="right-panel">
+            <div id="response" class="response-box"></div>
+            
+            <div class="input-area">
+                <textarea id="message" placeholder="Ask your coach about this position, or make a move..."></textarea>
+                <button onclick="analyze()">Analyze Position</button>
+            </div>
+        </div>
 
-    <!-- Changed from <pre> to <div> for proper HTML injection -->
-    <div id="response"></div>
+    </div>
 
     <script src="script.js"></script>
 </body>

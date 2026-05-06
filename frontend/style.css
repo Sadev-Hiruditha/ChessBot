@@ -1,49 +1,151 @@
+/* --- VARIABLES (Our Color Palette) --- */
+:root {
+    --bg-color: #0f172a;       /* Deep slate background */
+    --panel-bg: #1e293b;       /* Slightly lighter slate for cards */
+    --text-main: #f8fafc;      /* Crisp white text */
+    --text-muted: #94a3b8;     /* Gray text for placeholders */
+    --primary: #3b82f6;        /* Bright blue accent */
+    --primary-hover: #2563eb;  /* Darker blue for hovering */
+}
+
+/* --- BASE STYLES --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+/* --- HEADER --- */
+header h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 40px;
+    letter-spacing: -0.5px;
+}
+
+header span {
+    color: var(--primary); /* Makes "AI Coach" blue */
+}
+
+/* --- LAYOUT (Flexbox Magic) --- */
+.container {
+    display: flex;
+    gap: 40px;
+    max-width: 1000px;
+    width: 100%;
+    align-items: flex-start;
+}
+
+/* --- LEFT PANEL (Board) --- */
+.left-panel {
+    flex: 0 0 450px; /* Forces the board side to be exactly 450px wide */
+    background: var(--panel-bg);
     padding: 20px;
-    background: #f5f5f5;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+chess-board {
+    width: 100%;
+    display: block;
+    border-radius: 4px;
+    overflow: hidden; /* Keeps the board corners neat */
+}
+
+/* --- RIGHT PANEL (Chat & AI) --- */
+.right-panel {
+    flex: 1; /* Takes up the rest of the available space */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* --- AI RESPONSE BOX --- */
+.response-box {
+    background: var(--panel-bg);
+    padding: 24px;
+    border-radius: 16px;
+    min-height: 200px;
+    max-height: 400px;
+    overflow-y: auto; /* Adds a scrollbar if the AI talks too much! */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    line-height: 1.7;
+    font-size: 15px;
+    border-left: 4px solid var(--primary); /* Cool blue accent line */
+    display: none; /* Hidden by default */
+}
+
+.response-box:not(:empty) {
+    display: block; /* Shows up when text is inside */
+}
+
+.response-box h3 {
+    color: var(--primary);
+    margin-top: 15px;
+    margin-bottom: 10px;
+}
+
+.response-box ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+/* --- INPUT AREA --- */
+.input-area {
+    background: var(--panel-bg);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 textarea {
-    width: 400px;
-    height: 80px;
-    margin-top: 20px;
-    display: block;
+    width: 100%;
+    height: 100px;
+    background: var(--bg-color);
+    color: var(--text-main);
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 15px;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    resize: none; /* Stops users from dragging the box size */
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+textarea:focus {
+    border-color: var(--primary); /* Glows blue when clicked */
 }
 
 button {
-    margin-top: 10px;
-    padding: 10px 20px;
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
     font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-#response {
-    background: #ffffff;
-    padding: 18px;
-    border-radius: 12px;
-    max-width: 650px;
-    line-height: 1.6;
-    font-size: 16px;
-    border: 1px solid #e0e0e0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    margin-top: 20px;
-    /* Hide by default until there is a response */
-    display: none; 
+button:hover {
+    background-color: var(--primary-hover);
 }
 
-/* Show the response box when it has content */
-#response:not(:empty) {
-    display: block;
-}
-
-#response h3 {
-    margin-top: 16px;
-    margin-bottom: 8px;
-    font-size: 18px;
-}
-
-#response ul {
-    padding-left: 20px;
-    margin-top: 8px;
+button:active {
+    transform: scale(0.98); /* Makes it feel like a real physical button press */
 }
